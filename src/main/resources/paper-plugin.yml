@@ -1,0 +1,4 @@
+name: MPEX
+version: '1.0'
+main: io.github.closeddev.mpex.MPEX
+api-version: '1.21'
