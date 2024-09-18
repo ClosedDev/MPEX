@@ -1,4 +1,4 @@
-package commands
+package io.github.closeddev.mpex.commands
 
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -6,8 +6,8 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class TestCommand : CommandExecutor {
-    override fun onCommand(p0: CommandSender, p1: Command, p2: String, p3: Array<out String>?): Boolean {
-        val p = p0 as Player
+    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
+        val p = sender as Player
         p.sendMessage("Hello World!")
         return true
     }
