@@ -2,3 +2,7 @@ name: MPEX
 version: '1.0'
 main: io.github.closeddev.mpex.MPEX
 api-version: '1.21'
+commands:
+  test:
+    description: Hello world
+    usage: /<command>

@@ -38,3 +38,13 @@ tasks.processResources {
         expand(props)
     }
 }
+
+tasks.register<Copy>("copyPlugin") {
+    dependsOn("build")
+
+    from(file("build/libs/MPEX-${version}-all.jar"))
+    into(file("C:/Servers/MPEX/Plugins"))
+    doLast {
+        println("Finished Apply")
+    }
+}

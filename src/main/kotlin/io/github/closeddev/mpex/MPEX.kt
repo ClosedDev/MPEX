@@ -1,11 +1,13 @@
 package io.github.closeddev.mpex
 
+import commands.TestCommand
 import org.bukkit.plugin.java.JavaPlugin
 
 class MPEX : JavaPlugin() {
 
     override fun onEnable() {
-        // Plugin startup logic
+        getCommand("test")?.setExecutor(TestCommand())
+        logger.info("Minecraft APEX Enabled.")
     }
 
     override fun onDisable() {
