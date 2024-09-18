@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.Vector
 
-class WallJump : Listener {
+class WallJumpEvent : Listener {
 
     val DASH_POWER = 0.5
     val LIMIT_DASH = NamespacedKey(MPEX.instance, "limit_dash")
@@ -24,7 +24,7 @@ class WallJump : Listener {
 
         if (player.location.getBlockType(0.0, -0.1, 0.0) == Material.AIR) {
             if (!player.isSneaking) {
-                if (!player.isSprinting) return
+//                if (!player.isSprinting) return
                 if (player.persistentDataContainer.get(LIMIT_DASH, PersistentDataType.BOOLEAN)!!) return
 
                 player.velocity = when {
