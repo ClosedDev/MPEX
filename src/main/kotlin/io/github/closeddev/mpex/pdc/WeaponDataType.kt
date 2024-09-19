@@ -2,7 +2,6 @@ package io.github.closeddev.mpex.pdc
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
-import com.google.gson.JsonObject
 import io.github.closeddev.mpex.weapons.Weapon
 import org.bukkit.Material
 import org.bukkit.persistence.PersistentDataAdapterContext
@@ -21,7 +20,7 @@ class WeaponDataType : PersistentDataType<String, Weapon> {
 
         val jsonObject = Gson().fromJson(p0, JsonElement::class.java).asJsonObject
 
-        return object : Weapon() {
+        return object : Weapon {
             override val name: String = jsonObject.get("name").asString
             override val fireLoop: Int = jsonObject.get("fireLoop").asInt
             override val fireWait: Long = jsonObject.get("fireWait").asLong
@@ -30,7 +29,7 @@ class WeaponDataType : PersistentDataType<String, Weapon> {
             override val reloadLength: Long = jsonObject.get("reloadLength").asLong
             override val tacticalReloadLength: Long = jsonObject.get("tacticalReloadLength").asLong
             override val material: Material = Material.getMaterial(jsonObject.get("material").asString) ?: Material.AIR
-            override val fireType: FireType = FireType.valueOf(jsonObject.get("fireType").asString)
+            override val fireType: Weapon.FireType = Weapon.FireType.valueOf(jsonObject.get("fireType").asString)
             override val fireCooldown: Long = jsonObject.get("fireCooldown").asLong
         }
     }
