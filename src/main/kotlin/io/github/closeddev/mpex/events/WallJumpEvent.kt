@@ -1,6 +1,8 @@
 package io.github.closeddev.mpex.events
 
 import io.github.closeddev.mpex.MPEX
+import io.github.closeddev.mpex.pdc.WeaponDataType
+import io.github.closeddev.mpex.weapons.Weapon
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -13,11 +15,15 @@ import org.bukkit.util.Vector
 
 class WallJumpEvent : Listener {
 
-    val DASH_POWER = 0.5
-    val LIMIT_DASH = NamespacedKey(MPEX.instance, "limit_dash")
+    private val dashPower = 0.5
+    private val isDashAllowed = NamespacedKey(MPEX.instance, "limit_dash")
 
     @EventHandler
-    fun onWalllJump(e: PlayerSwapHandItemsEvent) {
+    fun onWallJump(e: PlayerSwapHandItemsEvent) {
+        if (e.player.inventory.itemInMainHand.isEmpty) return
+        if (e.player.inventory.itemInMainHand.itemMeta.persistentDataContainer
+            .get(Weapon.WEAPON_DATA, WeaponDataType())?.fireType == Weapon.FireType.SINGLE_FIRE) return
+
         e.isCancelled = true
 
         val player = e.player
@@ -25,41 +31,31 @@ class WallJumpEvent : Listener {
         if (player.location.getBlockType(0.0, -0.1, 0.0) == Material.AIR) {
             if (!player.isSneaking) {
 //                if (!player.isSprinting) return
-                if (player.persistentDataContainer.get(LIMIT_DASH, PersistentDataType.BOOLEAN)!!) return
+                if (player.persistentDataContainer.get(isDashAllowed, PersistentDataType.BOOLEAN)!!) return
 
                 player.velocity = when {
                     player.location.getBlockType(1, 0, 0) != Material.AIR ->
-                        Vector(-DASH_POWER, DASH_POWER, player.location.direction.z*DASH_POWER)
+                        Vector(-dashPower, dashPower, player.location.direction.z*dashPower)
                     player.location.getBlockType(-1, 0, 0) != Material.AIR ->
-                        Vector(DASH_POWER, DASH_POWER, player.location.direction.z*DASH_POWER)
+                        Vector(dashPower, dashPower, player.location.direction.z*dashPower)
                     player.location.getBlockType(0, 0, 1) != Material.AIR ->
-                        Vector(player.location.direction.x*DASH_POWER, DASH_POWER, -DASH_POWER)
+                        Vector(player.location.direction.x*dashPower, dashPower, -dashPower)
                     player.location.getBlockType(0, 0, -1) != Material.AIR ->
-                        Vector(player.location.direction.x*DASH_POWER, DASH_POWER, DASH_POWER)
+                        Vector(player.location.direction.x*dashPower, dashPower, dashPower)
                     else -> return
                 }
 
-                player.persistentDataContainer.set(LIMIT_DASH, PersistentDataType.BOOLEAN, true)
-            } else {
-
+                player.persistentDataContainer.set(isDashAllowed, PersistentDataType.BOOLEAN, true)
             }
         }
-//                if (p.getLocation().subtract(1.0, 0.0, 0.0).getBlock().getType() != Material.AIR ||
-//                    p.getLocation().subtract(-1.0, 0.0, 0.0).getBlock().getType() != Material.AIR ||
-//                    p.getLocation().subtract(0.0, 0.0, 1.0).getBlock().getType() != Material.AIR ||
-//                    p.getLocation().subtract(0.0, 0.0, -1.0).getBlock().getType() != Material.AIR) {
-//                    Vector unitVector = new Vector(0.0, 0.6, 0.0);
-//                    p.setVelocity(unitVector);
-//                }
     }
 
     @EventHandler
     fun onGround(e: PlayerMoveEvent) {
         if (e.player.location.getBlockType(0.0, -0.1, 0.0) != Material.AIR) {
-            e.player.persistentDataContainer.set(LIMIT_DASH, PersistentDataType.BOOLEAN, false)
+            e.player.persistentDataContainer.set(isDashAllowed, PersistentDataType.BOOLEAN, false)
         }
     }
-
 
     private fun Location.getBlockType(x: Int, y: Int, z: Int): Material {
         return this.add(x.toDouble(), y.toDouble(), z.toDouble()).block.type

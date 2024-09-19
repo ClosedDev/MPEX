@@ -22,13 +22,14 @@ class ProjectileEvents : Listener {
     @EventHandler
     fun onDamage(e: EntityDamageByEntityEvent) {
         if (e.damager.type == EntityType.ARROW) {
-            e.isCancelled = true
-
             val projectile = e.damager as Projectile
             val attacker = projectile.shooter as Player
             val container = projectile.persistentDataContainer
 
             if (container.has(Weapon.WEAPON_DAMAGE)) { e.damage = container.get(Weapon.WEAPON_DAMAGE, PersistentDataType.FLOAT)!!.toDouble() }
+            else return // if not weapon
+
+            e.isCancelled = true
 
             val victim = e.entity as LivingEntity
             if ((victim.health - e.damage) <= 0) {

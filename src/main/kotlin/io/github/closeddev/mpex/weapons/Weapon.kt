@@ -21,7 +21,7 @@ abstract class Weapon {
         val WEAPON_AMO = NamespacedKey(MPEX.instance, "weapon_amo")
         val WEAPON_COOLDOWN = NamespacedKey(MPEX.instance, "weapon_cooldown")
         val WEAPON_RELOAD = NamespacedKey(MPEX.instance, "weapon_reload")
-        val WEAPON_ISTACTICAL = NamespacedKey(MPEX.instance, "weapon_istactical")
+        val WEAPON_IS_TACTICAL = NamespacedKey(MPEX.instance, "weapon_istactical")
 
         val INSTANCE_MAP: MutableMap<UUID, ItemStack> = mutableMapOf()
     }
@@ -62,7 +62,7 @@ abstract class Weapon {
                     player.playSound(player.location, Sound.BLOCK_IRON_TRAPDOOR_CLOSE, 0.5f, 1.7f)
                     return@Runnable
                 }
-                meta.persistentDataContainer.set(WEAPON_AMO, PersistentDataType.INTEGER, leftAmo-1)
+                meta.persistentDataContainer.set(WEAPON_AMO, PersistentDataType.INTEGER, leftAmo - 1)
                 itemStack.itemMeta = meta
 
                 val projectile = player.launchProjectile(org.bukkit.entity.Arrow::class.java)
@@ -83,6 +83,7 @@ abstract class Weapon {
         Bukkit.getScheduler().runTaskLater(MPEX.instance, Runnable {
             meta.persistentDataContainer.set(WEAPON_COOLDOWN, PersistentDataType.BOOLEAN, false)
             itemStack.itemMeta = meta
+            if (fireType == FireType.SINGLE_FIRE) player.playSound(player.location, Sound.BLOCK_IRON_TRAPDOOR_OPEN, 0.5f, 1.7f)
         }, fireCooldown)
     }
 
@@ -94,9 +95,11 @@ abstract class Weapon {
         if (leftAmo == maxAmo) return
 
         meta.persistentDataContainer.set(WEAPON_COOLDOWN, PersistentDataType.BOOLEAN, true)
-        meta.persistentDataContainer.set(WEAPON_ISTACTICAL, PersistentDataType.BOOLEAN, leftAmo > 0)
+        meta.persistentDataContainer.set(WEAPON_IS_TACTICAL, PersistentDataType.BOOLEAN, leftAmo > 0)
 
-        val reloadTime = if (meta.persistentDataContainer.has(WEAPON_RELOAD)) { (meta.persistentDataContainer.get(WEAPON_RELOAD, PersistentDataType.FLOAT)!!*100.0F).toLong() } else { if (leftAmo > 0) tacticalReloadLength else reloadLength }
+        val reloadTime = if (meta.persistentDataContainer.has(WEAPON_RELOAD)) { (meta.persistentDataContainer.get(WEAPON_RELOAD, PersistentDataType.FLOAT)!!*100.0F).toLong() }
+            else { if (leftAmo > 0) tacticalReloadLength else reloadLength }
+
         for (i in 0..<reloadTime) {
             Bukkit.getScheduler().runTaskLater(MPEX.instance, Runnable {
                 meta.persistentDataContainer.set(WEAPON_RELOAD, PersistentDataType.FLOAT, (reloadTime-i)*0.01f)
@@ -106,7 +109,7 @@ abstract class Weapon {
 
         Bukkit.getScheduler().runTaskLater(MPEX.instance, Runnable {
             meta.persistentDataContainer.remove(WEAPON_RELOAD)
-            meta.persistentDataContainer.remove(WEAPON_ISTACTICAL)
+            meta.persistentDataContainer.remove(WEAPON_IS_TACTICAL)
             meta.persistentDataContainer.set(WEAPON_COOLDOWN, PersistentDataType.BOOLEAN, false)
             meta.persistentDataContainer.set(WEAPON_AMO, PersistentDataType.INTEGER, maxAmo)
             itemStack.itemMeta = meta
