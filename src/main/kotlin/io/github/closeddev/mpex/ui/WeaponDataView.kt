@@ -16,11 +16,13 @@ class WeaponDataView : Runnable {
 
             if (container.has(Weapon.WEAPON_RELOAD)) {
                 val cooldown = container.get(Weapon.WEAPON_RELOAD, PersistentDataType.FLOAT) ?: return
-                val maxCollDown = (if (container.get(Weapon.WEAPON_IS_TACTICAL, PersistentDataType.BOOLEAN) == true) weapon.tacticalReloadLength.toFloat() else weapon.reloadLength.toFloat())*0.01F
-                player.exp = (maxCollDown - cooldown) / maxCollDown
-                player.level = (((maxCollDown - cooldown) / maxCollDown) * weapon.maxAmo.toFloat()).roundToInt()
+                val maxCoolDown = (if (container.get(Weapon.WEAPON_IS_TACTICAL, PersistentDataType.BOOLEAN) == true) weapon.tacticalReloadLength.toFloat() else weapon.reloadLength.toFloat())*0.01F
+
+                player.exp = (maxCoolDown - cooldown) / maxCoolDown
+                player.level = (((maxCoolDown - cooldown) / maxCoolDown) * weapon.maxAmo.toFloat()).roundToInt()
             } else {
                 val leftAmo = container.get(Weapon.WEAPON_AMO, PersistentDataType.INTEGER) ?: return
+
                 player.exp = leftAmo.toFloat() / weapon.maxAmo.toFloat()
                 player.level = leftAmo
             }

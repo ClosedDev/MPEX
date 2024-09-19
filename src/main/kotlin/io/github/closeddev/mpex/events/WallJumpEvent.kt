@@ -15,8 +15,10 @@ import org.bukkit.util.Vector
 
 class WallJumpEvent : Listener {
 
-    private val dashPower = 0.5
-    private val isDashAllowed = NamespacedKey(MPEX.instance, "limit_dash")
+    companion object {
+        const val DASH_POWER = 0.5
+        val LIMIT_DASH = NamespacedKey(MPEX.instance, "limit_dash")
+    }
 
     @EventHandler
     fun onWallJump(e: PlayerSwapHandItemsEvent) {
@@ -31,21 +33,23 @@ class WallJumpEvent : Listener {
         if (player.location.getBlockType(0.0, -0.1, 0.0) == Material.AIR) {
             if (!player.isSneaking) {
 //                if (!player.isSprinting) return
-                if (player.persistentDataContainer.get(isDashAllowed, PersistentDataType.BOOLEAN)!!) return
+                if (player.persistentDataContainer.get(LIMIT_DASH, PersistentDataType.BOOLEAN)!!) return
 
                 player.velocity = when {
                     player.location.getBlockType(1, 0, 0) != Material.AIR ->
-                        Vector(-dashPower, dashPower, player.location.direction.z*dashPower)
+                        Vector(-DASH_POWER, DASH_POWER, player.location.direction.z*DASH_POWER)
                     player.location.getBlockType(-1, 0, 0) != Material.AIR ->
-                        Vector(dashPower, dashPower, player.location.direction.z*dashPower)
+                        Vector(DASH_POWER, DASH_POWER, player.location.direction.z*DASH_POWER)
                     player.location.getBlockType(0, 0, 1) != Material.AIR ->
-                        Vector(player.location.direction.x*dashPower, dashPower, -dashPower)
+                        Vector(player.location.direction.x*DASH_POWER, DASH_POWER, -DASH_POWER)
                     player.location.getBlockType(0, 0, -1) != Material.AIR ->
-                        Vector(player.location.direction.x*dashPower, dashPower, dashPower)
+                        Vector(player.location.direction.x*DASH_POWER, DASH_POWER, DASH_POWER)
                     else -> return
                 }
 
-                player.persistentDataContainer.set(isDashAllowed, PersistentDataType.BOOLEAN, true)
+                player.persistentDataContainer.set(LIMIT_DASH, PersistentDataType.BOOLEAN, true)
+            } else {
+                // TODO : Wall Parkour
             }
         }
     }
@@ -53,7 +57,7 @@ class WallJumpEvent : Listener {
     @EventHandler
     fun onGround(e: PlayerMoveEvent) {
         if (e.player.location.getBlockType(0.0, -0.1, 0.0) != Material.AIR) {
-            e.player.persistentDataContainer.set(isDashAllowed, PersistentDataType.BOOLEAN, false)
+            e.player.persistentDataContainer.set(LIMIT_DASH, PersistentDataType.BOOLEAN, false)
         }
     }
 

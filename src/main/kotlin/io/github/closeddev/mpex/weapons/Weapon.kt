@@ -9,9 +9,8 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
-import java.util.*
 
-abstract class Weapon {
+interface Weapon {
 
     companion object {
         val WEAPON_DATA = NamespacedKey(MPEX.instance, "weapon_data")
@@ -21,9 +20,7 @@ abstract class Weapon {
         val WEAPON_AMO = NamespacedKey(MPEX.instance, "weapon_amo")
         val WEAPON_COOLDOWN = NamespacedKey(MPEX.instance, "weapon_cooldown")
         val WEAPON_RELOAD = NamespacedKey(MPEX.instance, "weapon_reload")
-        val WEAPON_IS_TACTICAL = NamespacedKey(MPEX.instance, "weapon_istactical")
-
-        val INSTANCE_MAP: MutableMap<UUID, ItemStack> = mutableMapOf()
+        val WEAPON_IS_TACTICAL = NamespacedKey(MPEX.instance, "weapon_is_tactical")
     }
 
     enum class FireType {
@@ -31,16 +28,16 @@ abstract class Weapon {
         MULTIPLE_FIRE
     }
 
-    abstract val name: String
-    abstract val fireLoop: Int
-    abstract val fireWait: Long
-    abstract val damage: Float
-    abstract val maxAmo: Int
-    abstract val reloadLength: Long
-    abstract val tacticalReloadLength: Long
-    abstract val material: Material
-    abstract val fireType: FireType
-    abstract val fireCooldown: Long
+    val name: String
+    val fireLoop: Int
+    val fireWait: Long
+    val damage: Float
+    val maxAmo: Int
+    val reloadLength: Long
+    val tacticalReloadLength: Long
+    val material: Material
+    val fireType: FireType
+    val fireCooldown: Long
 
     val itemStack: ItemStack
         get() = ItemStack(material).apply {
@@ -97,7 +94,8 @@ abstract class Weapon {
         meta.persistentDataContainer.set(WEAPON_COOLDOWN, PersistentDataType.BOOLEAN, true)
         meta.persistentDataContainer.set(WEAPON_IS_TACTICAL, PersistentDataType.BOOLEAN, leftAmo > 0)
 
-        val reloadTime = if (meta.persistentDataContainer.has(WEAPON_RELOAD)) { (meta.persistentDataContainer.get(WEAPON_RELOAD, PersistentDataType.FLOAT)!!*100.0F).toLong() }
+        val reloadTime =
+            if (meta.persistentDataContainer.has(WEAPON_RELOAD)) { (meta.persistentDataContainer.get(WEAPON_RELOAD, PersistentDataType.FLOAT)!!*100.0F).toLong() }
             else { if (leftAmo > 0) tacticalReloadLength else reloadLength }
 
         for (i in 0..<reloadTime) {
