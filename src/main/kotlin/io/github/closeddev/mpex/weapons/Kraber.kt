@@ -2,7 +2,7 @@ package io.github.closeddev.mpex.weapons
 
 import org.bukkit.Material
 
-class Kraber : Weapon() {
+class Kraber : Weapon {
     override val name: String = "Kraber .50-Cal Sniper"
     override val fireLoop: Int = 1
     override val fireWait: Long = 0L
@@ -11,6 +11,6 @@ class Kraber : Weapon() {
     override val reloadLength: Long = 430L
     override val tacticalReloadLength: Long = 320L
     override val material: Material = Material.SPYGLASS
-    override val fireType: FireType = FireType.SINGLE_FIRE
+    override val fireType: Weapon.FireType = Weapon.FireType.SINGLE_FIRE
     override val fireCooldown: Long = 240L
 }
