@@ -1,6 +1,8 @@
 package io.github.closeddev.mpex
 
+import io.github.closeddev.mpex.commands.GameCommand
 import io.github.closeddev.mpex.commands.TestCommand
+import io.github.closeddev.mpex.commands.tabComplete.GameTabCompletion
 import io.github.closeddev.mpex.events.ProjectileEvents
 import io.github.closeddev.mpex.events.FireEvent
 import io.github.closeddev.mpex.events.ReloadWeaponEvent
@@ -18,6 +20,9 @@ class MPEX : JavaPlugin() {
         instance = this
 
         getCommand("test")?.setExecutor(TestCommand())
+        getCommand("game")?.setExecutor(GameCommand())
+
+        getCommand("game")?.tabCompleter = GameTabCompletion()
 
         server.pluginManager.registerEvents(WallJumpEvent(), this)
         server.pluginManager.registerEvents(FireEvent(), this)

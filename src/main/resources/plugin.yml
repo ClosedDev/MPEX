@@ -6,3 +6,6 @@ commands:
   test:
     description: Hello world
     usage: /<command>
+  game:
+    description: Management Games
+    usage: /<command>
