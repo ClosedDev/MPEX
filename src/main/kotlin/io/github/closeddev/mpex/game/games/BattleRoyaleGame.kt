@@ -27,7 +27,6 @@ class BattleRoyaleGame(
                 val leftPlayers = players.subtract(deathPlayers.toSet())
                 if (leftPlayers.size == 1) {
                     win(leftPlayers.toList())
-                    stop()
                 }
             }
         }

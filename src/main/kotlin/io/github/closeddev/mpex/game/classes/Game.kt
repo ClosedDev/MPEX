@@ -7,6 +7,7 @@ import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Sound
+import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.HandlerList
@@ -39,6 +40,8 @@ abstract class Game {
         currentPlaying.add(this)
         ready()
         countdown()
+
+        onReady()
     }
 
     private fun ready() {
@@ -47,6 +50,7 @@ abstract class Game {
             else player.teleport(map.startPosition[0])
             player.gameMode = GameMode.ADVENTURE
             player.inventory.clear()
+            player.health = player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.value ?: 20.0
             map.weapon.forEach { player.inventory.addItem(it.itemStack) }
         }
         map.specialFeature?.let { MPEX.instance.server.pluginManager.registerEvents(it, MPEX.instance) }
@@ -95,8 +99,16 @@ abstract class Game {
 
             HandlerList.unregisterAll(moveLockHandler)
             startShowTime()
+
+            onStart()
         }, 200L)
     }
+
+    open fun onReady() {}
+    open fun onStart() {}
+    open fun onStop() {}
+    open fun onEnd() {}
+    open fun onAbort() {}
 
     private var startMillis: Long = 0L
     private lateinit var showTimeTask: BukkitTask
@@ -142,12 +154,32 @@ abstract class Game {
 
             it.inventory.clear()
         }
+
+        onEnd()
+        stop()
     }
 
-    fun stop() {
+    fun abort() {
+        players.forEach {
+            it.showTitle(
+                Title.title(Component.text("GAME ABORTED").color(TextColor.color(0x00ff5555)),
+                    Component.text("Something went wrong..."),
+                    Title.Times.times(Duration.ofMillis(250L), Duration.ofSeconds(2L), Duration.ofSeconds(1L)))
+            )
+            it.playSound(it, Sound.ENTITY_ENDER_DRAGON_AMBIENT, 100f, 1f)
+            it.inventory.clear()
+        }
+
+        onAbort()
+        stop()
+    }
+
+    private fun stop() {
         HandlerList.unregisterAll(winConditionListener)
         map.specialFeature?.let { HandlerList.unregisterAll(it) }
         currentPlaying.remove(this)
         showTimeTask.cancel()
+
+        onStop()
     }
 }

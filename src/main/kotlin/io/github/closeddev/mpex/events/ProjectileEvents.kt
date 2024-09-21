@@ -34,13 +34,12 @@ class ProjectileEvents : Listener {
             if (container.has(Weapon.WEAPON_DAMAGE)) { e.damage = container.get(Weapon.WEAPON_DAMAGE, PersistentDataType.FLOAT)!!.toDouble() }
             else return // if not weapon
 
-            e.isCancelled = true
-
             val victim = e.entity as LivingEntity
             if ((victim.health - e.damage) <= 0) {
-                victim.damage(e.damage)
+                e.isCancelled = false
             } else {
                 victim.health -= e.damage
+                e.isCancelled = true
             }
 
             attacker.playSound(attacker.location, Sound.ENTITY_PLAYER_ATTACK_CRIT, 0.6f, 1f)
