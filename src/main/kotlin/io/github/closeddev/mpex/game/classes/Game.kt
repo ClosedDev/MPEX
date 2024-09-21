@@ -11,16 +11,18 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
-import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.scheduler.BukkitTask
 import java.time.Duration
 import java.util.*
 
-class Game(
-    val map: Map,
-    val players : List<Player>,
-    val id: UUID = UUID.randomUUID()) : Listener {
+abstract class Game {
+    abstract val map: Map
+    abstract val players: List<Player>
+    abstract val winConditionListener: Listener
+    abstract val isAvailable: Boolean
+
+    val id: UUID = UUID.randomUUID()
 
     companion object {
         val currentPlaying = mutableListOf<Game>()
@@ -31,7 +33,9 @@ class Game(
     }
 
     fun start() {
-        MPEX.instance.server.pluginManager.registerEvents(this, MPEX.instance)
+        if (!isAvailable) return
+
+        MPEX.instance.server.pluginManager.registerEvents(winConditionListener, MPEX.instance)
         currentPlaying.add(this)
         ready()
         countdown()
@@ -118,21 +122,7 @@ class Game(
         }
     }
 
-    private val deathPlayers = mutableListOf<Player>()
-    @EventHandler
-    fun onDeath(e: PlayerDeathEvent) {
-        if (players.contains(e.player)) {
-            deathPlayers.add(e.player)
-
-            val leftPlayers = players.subtract(deathPlayers.toSet())
-            if (leftPlayers.size == 1) {
-                win(leftPlayers.first())
-                stop()
-            }
-        }
-    }
-
-    private fun win(player: Player) {
+    fun win(player: Player) {
         players.forEach {
             if (it == player) {
                 it.showTitle(
@@ -155,7 +145,7 @@ class Game(
     }
 
     fun stop() {
-        HandlerList.unregisterAll(this)
+        HandlerList.unregisterAll(winConditionListener)
         map.specialFeature?.let { HandlerList.unregisterAll(it) }
         currentPlaying.remove(this)
         showTimeTask.cancel()
