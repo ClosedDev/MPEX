@@ -22,9 +22,10 @@ class WallJumpEvent : Listener {
 
     @EventHandler
     fun onWallJump(e: PlayerSwapHandItemsEvent) {
-        if (e.player.inventory.itemInMainHand.isEmpty) return
-        if (e.player.inventory.itemInMainHand.itemMeta.persistentDataContainer
-            .get(Weapon.WEAPON_DATA, WeaponDataType())?.fireType == Weapon.FireType.SINGLE_FIRE) return
+        if (!e.player.inventory.itemInMainHand.isEmpty) {
+            if (e.player.inventory.itemInMainHand.itemMeta.persistentDataContainer
+                    .get(Weapon.WEAPON_DATA, WeaponDataType())?.fireType == Weapon.FireType.SINGLE_FIRE) return
+        }
 
         e.isCancelled = true
 

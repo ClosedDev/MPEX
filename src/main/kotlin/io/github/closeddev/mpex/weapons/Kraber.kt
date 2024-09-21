@@ -8,9 +8,9 @@ class Kraber : Weapon {
     override val fireWait: Long = 0L
     override val damage: Float = 20.0F
     override val maxAmo: Int = 4
-    override val reloadLength: Long = 430L
-    override val tacticalReloadLength: Long = 320L
+    override val reloadLength: Long = 172L
+    override val tacticalReloadLength: Long = 128L
     override val material: Material = Material.SPYGLASS
     override val fireType: Weapon.FireType = Weapon.FireType.SINGLE_FIRE
-    override val fireCooldown: Long = 240L
+    override val fireCooldown: Long = 96L
 }

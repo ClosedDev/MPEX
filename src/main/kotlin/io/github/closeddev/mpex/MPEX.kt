@@ -1,8 +1,7 @@
 package io.github.closeddev.mpex
 
-import io.github.closeddev.mpex.commands.GameCommand
+import io.github.closeddev.mpex.game.commands.GameCommand
 import io.github.closeddev.mpex.commands.TestCommand
-import io.github.closeddev.mpex.commands.tabComplete.GameTabCompletion
 import io.github.closeddev.mpex.events.ProjectileEvents
 import io.github.closeddev.mpex.events.FireEvent
 import io.github.closeddev.mpex.events.ReloadWeaponEvent
@@ -22,14 +21,14 @@ class MPEX : JavaPlugin() {
         getCommand("test")?.setExecutor(TestCommand())
         getCommand("game")?.setExecutor(GameCommand())
 
-        getCommand("game")?.tabCompleter = GameTabCompletion()
+        getCommand("game")?.tabCompleter = GameCommand()
 
         server.pluginManager.registerEvents(WallJumpEvent(), this)
         server.pluginManager.registerEvents(FireEvent(), this)
         server.pluginManager.registerEvents(ProjectileEvents(), this)
         server.pluginManager.registerEvents(ReloadWeaponEvent(), this)
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, WeaponDataView(), 0L, 5L)
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, WeaponDataView(), 0L, 2L)
 
         logger.info("Minecraft APEX Enabled.")
     }

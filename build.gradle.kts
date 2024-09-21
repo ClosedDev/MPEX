@@ -44,7 +44,7 @@ tasks.register<Copy>("copyPluginForDev") {
     dependsOn("build")
 
     from(file("build/libs/MPEX-${version}-all.jar"))
-    into(file("C:/Servers/MPEX/Plugins"))
+    into(file("D:/servers/mpex/plugins"))
     doLast {
         println("Finished Apply")
     }

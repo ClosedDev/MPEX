@@ -54,7 +54,7 @@ class ProjectileEvents : Listener {
             if (e.hitEntity == null && e.hitBlock!!.type != Material.BARRIER) {
                 Bukkit.getScheduler().runTaskLater(MPEX.instance, Runnable {
                     pr.remove()
-                }, 200L)
+                }, 80L)
             } else {
                 pr.remove()
             }
