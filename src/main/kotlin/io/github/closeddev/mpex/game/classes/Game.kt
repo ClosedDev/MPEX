@@ -13,6 +13,7 @@ import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.scheduler.BukkitTask
 import java.time.Duration
 import java.util.*
 
@@ -59,19 +60,19 @@ class Game(
 
         players.forEach {
             it.showTitle(
-                Title.title(Component.text("READY").color(TextColor.color(0x00ffaa00)),
-                    Component.text(""),
-                    Title.Times.times(Duration.ofMillis(500L), Duration.ofSeconds(2L), Duration.ZERO))
+                Title.title(Component.text("READY").color(TextColor.color(0x00ffff55)),
+                    Component.text("Start in 5 seconds..."),
+                    Title.Times.times(Duration.ofMillis(500L), Duration.ofSeconds(3L), Duration.ZERO))
             )
         }
 
-        for (i in 1..3) {
+        for (i in 2..4) {
             Bukkit.getScheduler().runTaskLater(MPEX.instance, Runnable {
                 players.forEach {
                     it.showTitle(
                         Title.title(Component.text("READY").color(TextColor.color(0x00ffaa00)),
-                            Component.text(4-i),
-                            Title.Times.times(Duration.ZERO, Duration.ofSeconds(1L), Duration.ZERO))
+                            Component.text(5-i),
+                            Title.Times.times(Duration.ZERO, Duration.ofSeconds(2L), Duration.ZERO))
                     )
                     it.playSound(it.location, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 1f)
                 }
@@ -85,15 +86,39 @@ class Game(
                         Component.text(""),
                         Title.Times.times(Duration.ZERO, Duration.ofSeconds(1L), Duration.ofSeconds(1L)))
                 )
-                it.playSound(it.location, Sound.EVENT_RAID_HORN, 100f, 1f)
+                it.playSound(it, Sound.EVENT_RAID_HORN, 100f, 1f)
             }
 
             HandlerList.unregisterAll(moveLockHandler)
-        }, 160L)
+            startShowTime()
+        }, 200L)
+    }
+
+    private var startMillis: Long = 0L
+    private lateinit var showTimeTask: BukkitTask
+
+    private fun startShowTime() {
+        startMillis = System.currentTimeMillis()
+
+        showTimeTask = Bukkit.getScheduler().runTaskTimerAsynchronously(MPEX.instance, Runnable {
+            val currentMillis = System.currentTimeMillis() - startMillis
+            val minutes = (currentMillis / 1000) / 60
+            val seconds = (currentMillis / 1000) % 60
+            players.forEach {
+                it.sendActionBar(Component.text("${formatLongValue(minutes)}:${formatLongValue(seconds)}").color(TextColor.color(0x00ffff55)))
+            }
+        }, 0L, 20L)
+    }
+
+    private fun formatLongValue(value: Long): String {
+        return if (value < 100) {
+            String.format("%02d", value)
+        } else {
+            value.toString()
+        }
     }
 
     private val deathPlayers = mutableListOf<Player>()
-
     @EventHandler
     fun onDeath(e: PlayerDeathEvent) {
         if (players.contains(e.player)) {
@@ -115,14 +140,14 @@ class Game(
                         Component.text("Awesome!"),
                         Title.Times.times(Duration.ofMillis(250L), Duration.ofSeconds(2L), Duration.ofSeconds(1L)))
                 )
-                it.playSound(it.location, Sound.ITEM_TOTEM_USE, 100f, 1f)
+                it.playSound(it, Sound.ITEM_TOTEM_USE, 100f, 1f)
             } else {
                 it.showTitle(
                     Title.title(Component.text("LOSE..").color(TextColor.color(0x00ff5555)),
                         Component.text("Try better for next time.."),
                         Title.Times.times(Duration.ofMillis(250L), Duration.ofSeconds(2L), Duration.ofSeconds(1L)))
                 )
-                it.playSound(it.location, Sound.ENTITY_ENDER_DRAGON_AMBIENT, 100f, 1f)
+                it.playSound(it, Sound.ENTITY_ENDER_DRAGON_AMBIENT, 100f, 1f)
             }
 
             it.inventory.clear()
@@ -133,5 +158,6 @@ class Game(
         HandlerList.unregisterAll(this)
         map.specialFeature?.let { HandlerList.unregisterAll(it) }
         currentPlaying.remove(this)
+        showTimeTask.cancel()
     }
 }

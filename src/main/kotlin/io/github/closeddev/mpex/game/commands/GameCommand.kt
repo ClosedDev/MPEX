@@ -15,7 +15,6 @@ class GameCommand : CommandExecutor, TabCompleter {
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-//        Game(RuinedVillage(), Bukkit.getOnlinePlayers().toList()).start()
         if (args.isNotEmpty()) {
             when(args[0]) {
                 "start" -> {
@@ -29,7 +28,6 @@ class GameCommand : CommandExecutor, TabCompleter {
                 }
                 "stop" -> {
                     if (args.size > 1) {
-//                        val game = Game.currentPlaying[0]
                         val game = Game.getInstance(args[1]) ?: return false
                         game.stop()
                         return true
