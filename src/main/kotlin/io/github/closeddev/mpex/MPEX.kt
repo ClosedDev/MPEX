@@ -11,6 +11,7 @@ import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 
 class MPEX : JavaPlugin() {
+
     companion object {
         internal lateinit var instance: MPEX
     }
@@ -18,15 +19,15 @@ class MPEX : JavaPlugin() {
     override fun onEnable() {
         instance = this
 
-        getCommand("test")?.setExecutor(TestCommand())
-        getCommand("game")?.setExecutor(GameCommand())
+        getCommand("test")?.setExecutor(TestCommand.instance)
 
-        getCommand("game")?.tabCompleter = GameCommand()
+        getCommand("game")?.setExecutor(GameCommand.instance)
+        getCommand("game")?.tabCompleter = GameCommand.instance
 
-        server.pluginManager.registerEvents(WallJumpEvent(), this)
-        server.pluginManager.registerEvents(FireEvent(), this)
-        server.pluginManager.registerEvents(ProjectileEvents(), this)
-        server.pluginManager.registerEvents(ReloadWeaponEvent(), this)
+        server.pluginManager.registerEvents(WallJumpEvent.instance, this)
+        server.pluginManager.registerEvents(FireEvent.instance, this)
+        server.pluginManager.registerEvents(ProjectileEvents.instance, this)
+        server.pluginManager.registerEvents(ReloadWeaponEvent.instance, this)
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, WeaponDataView(), 0L, 2L)
 

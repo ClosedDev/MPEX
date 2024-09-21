@@ -19,6 +19,11 @@ import org.bukkit.persistence.PersistentDataType
 
 
 class ProjectileEvents : Listener {
+
+    companion object {
+        val instance = ProjectileEvents()
+    }
+
     @EventHandler
     fun onDamage(e: EntityDamageByEntityEvent) {
         if (e.damager.type == EntityType.ARROW) {
@@ -37,12 +42,14 @@ class ProjectileEvents : Listener {
             } else {
                 victim.health -= e.damage
             }
-            victim.noDamageTicks = 0
 
             attacker.playSound(attacker.location, Sound.ENTITY_PLAYER_ATTACK_CRIT, 0.6f, 1f)
             victim.world.playSound(victim.location, Sound.ENTITY_PLAYER_HURT, 1f, 1f)
 
             victim.world.spawnParticle(Particle.CRIT, victim.location, 20, 0.25, 1.0, 0.25, 0.25)
+        } else {
+            e.damage = 1.0
+            (e.entity as LivingEntity).noDamageTicks = 0
         }
     }
 

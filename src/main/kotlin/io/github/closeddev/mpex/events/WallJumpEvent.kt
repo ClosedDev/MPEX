@@ -6,6 +6,7 @@ import io.github.closeddev.mpex.weapons.Weapon
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerMoveEvent
@@ -16,6 +17,8 @@ import org.bukkit.util.Vector
 class WallJumpEvent : Listener {
 
     companion object {
+        val instance = WallJumpEvent()
+
         const val DASH_POWER = 0.5
         val LIMIT_DASH = NamespacedKey(MPEX.instance, "limit_dash")
     }
@@ -57,7 +60,7 @@ class WallJumpEvent : Listener {
 
     @EventHandler
     fun onGround(e: PlayerMoveEvent) {
-        if (e.player.location.getBlockType(0.0, -0.1, 0.0) != Material.AIR) {
+        if ((e.player as LivingEntity).isOnGround) {
             e.player.persistentDataContainer.set(LIMIT_DASH, PersistentDataType.BOOLEAN, false)
         }
     }

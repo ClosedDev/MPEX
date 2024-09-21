@@ -8,7 +8,12 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class TestCommand : CommandExecutor {
-    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>?): Boolean {
+
+    companion object {
+        val instance = TestCommand()
+    }
+
+    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         val p = sender as Player
         p.sendMessage("Hello World!")
 

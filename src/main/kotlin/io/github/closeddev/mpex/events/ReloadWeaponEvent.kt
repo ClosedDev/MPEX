@@ -5,9 +5,13 @@ import io.github.closeddev.mpex.weapons.Weapon
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerDropItemEvent
-import org.bukkit.inventory.ItemStack
 
 class ReloadWeaponEvent : Listener {
+
+    companion object {
+        val instance = ReloadWeaponEvent()
+    }
+
     @EventHandler
     fun onReload(e: PlayerDropItemEvent) {
         if (e.itemDrop.itemStack.itemMeta.persistentDataContainer.has(Weapon.WEAPON_DATA)) {

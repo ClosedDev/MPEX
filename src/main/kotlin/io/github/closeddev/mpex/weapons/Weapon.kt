@@ -43,12 +43,12 @@ interface Weapon {
         get() = ItemStack(material).apply {
             val meta = this@apply.itemMeta
             meta.persistentDataContainer.set(WEAPON_DATA, WeaponDataType(), this@Weapon)
+            meta.persistentDataContainer.set(WEAPON_AMO, PersistentDataType.INTEGER, maxAmo)
             this@apply.itemMeta = meta
         }
 
     fun fire(player: Player, itemStack: ItemStack) {
         val meta = itemStack.itemMeta
-        if (!meta.persistentDataContainer.has(WEAPON_AMO)) { meta.persistentDataContainer.set(WEAPON_AMO, PersistentDataType.INTEGER, maxAmo); itemStack.itemMeta = meta }
 
         if (meta.persistentDataContainer.get(WEAPON_COOLDOWN, PersistentDataType.BOOLEAN) == true) return
 
@@ -86,7 +86,6 @@ interface Weapon {
 
     fun reload(itemStack: ItemStack) {
         val meta = itemStack.itemMeta
-        if (!meta.persistentDataContainer.has(WEAPON_AMO)) { meta.persistentDataContainer.set(WEAPON_AMO, PersistentDataType.INTEGER, maxAmo); itemStack.itemMeta = meta }
 
         val leftAmo = meta.persistentDataContainer.get(WEAPON_AMO, PersistentDataType.INTEGER)!!
         if (leftAmo == maxAmo) return
