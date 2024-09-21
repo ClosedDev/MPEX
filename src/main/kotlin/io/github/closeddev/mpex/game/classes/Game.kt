@@ -122,9 +122,9 @@ abstract class Game {
         }
     }
 
-    fun win(player: Player) {
+    fun win(winPlayers: List<Player>) {
         players.forEach {
-            if (it == player) {
+            if (winPlayers.contains(it)) {
                 it.showTitle(
                     Title.title(Component.text("WON!").color(TextColor.color(0x0055ff55)),
                         Component.text("Awesome!"),
