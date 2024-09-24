@@ -1,6 +1,7 @@
 package io.github.closeddev.mpex.weapons
 
 import io.github.closeddev.mpex.MPEX
+import io.github.closeddev.mpex.events.ProjectileEvents
 import io.github.closeddev.mpex.pdc.WeaponDataType
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -48,6 +49,11 @@ interface Weapon {
         }
 
     fun fire(player: Player, itemStack: ItemStack) {
+        if (player.persistentDataContainer.has(ProjectileEvents.IS_IMMUNE)) {
+            player.playSound(player.location, Sound.BLOCK_ANVIL_USE, 0.5f, 1.0f)
+            return
+        }
+
         val meta = itemStack.itemMeta
 
         if (meta.persistentDataContainer.get(WEAPON_COOLDOWN, PersistentDataType.BOOLEAN) == true) return

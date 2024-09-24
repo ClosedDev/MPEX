@@ -14,6 +14,7 @@ class RuinedVillage : Map {
         Location(Bukkit.getWorld("world"), -56.5, -12.0, 29.5, -135f, 0f),
         Location(Bukkit.getWorld("world"), -12.5, -12.0, -14.5, 45f, 0f)
     )
+    override val respawnPosition: List<Location> = startPosition
     override val weapon: List<Weapon> = listOf(Carbine())
     override val specialFeature: Listener? = null
 }

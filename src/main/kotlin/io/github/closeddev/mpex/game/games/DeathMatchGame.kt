@@ -1,6 +1,7 @@
 package io.github.closeddev.mpex.game.games
 
 import io.github.closeddev.mpex.MPEX
+import io.github.closeddev.mpex.events.ProjectileEvents
 import io.github.closeddev.mpex.game.classes.Game
 import io.github.closeddev.mpex.game.classes.Map
 import net.kyori.adventure.text.Component
@@ -12,6 +13,9 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerRespawnEvent
+import org.bukkit.persistence.PersistentDataType
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitTask
 import java.time.Duration
 
@@ -65,7 +69,28 @@ class DeathMatchGame(
 
         @EventHandler
         fun onRespawn(e: PlayerRespawnEvent) {
-            e.respawnLocation = map.startPosition.random()
+            val enemyPlayers =
+                if (redPlayers.contains(e.player)) bluePlayers
+                else if (bluePlayers.contains(e.player)) redPlayers
+                else return
+
+            val respawnLocation = map.respawnPosition.maxByOrNull { respawn ->
+                enemyPlayers.minOfOrNull { enemy ->
+                    enemy.location.distance(respawn)
+                } ?: Double.MAX_VALUE
+            } ?: map.startPosition.random()
+
+            e.respawnLocation = respawnLocation
+
+            e.player.persistentDataContainer.set(ProjectileEvents.IS_IMMUNE, PersistentDataType.BOOLEAN, true)
+
+            Bukkit.getScheduler().runTaskLater(MPEX.instance, Runnable {
+                e.player.addPotionEffect(PotionEffect(PotionEffectType.GLOWING, 119, 255, true))
+            }, 1L)
+
+            Bukkit.getScheduler().runTaskLaterAsynchronously(MPEX.instance, Runnable {
+                e.player.persistentDataContainer.remove(ProjectileEvents.IS_IMMUNE)
+            }, 120L)
         }
     }
 

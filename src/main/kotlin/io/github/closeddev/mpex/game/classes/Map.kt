@@ -17,6 +17,7 @@ interface Map {
     val name: String // 노르테유 익스프레스
     val id: String // NORTHEU_EXPRESS
     val startPosition: List<Location>
+    val respawnPosition: List<Location>
     val weapon: List<Weapon>
     val specialFeature: Listener?
 }
